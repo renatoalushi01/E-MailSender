@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% block title %} User Manager {% endblock%}
+{% block body %}
+<div class="container"><h1>Users</h1></div>
+{% if user %}
+    <table id="user" class="table table-striped">
+      <thead>
+      <tr><th><a href="/E-MailSender/public/user/adduser" class="nav-link">New User</a></th></tr>
+        <tr>
+          <th>Users Title</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for users in user %}
+          <tr>
+            <td>{{ users.email }}</td>
+            <td>
+              <a href="/E-MailSender/public/user/edit/{{ users.id }}" class="btn btn-light">Edit</a>
+              <a href="#" class="btn btn-danger delete-user" data-id="{{ users.id }}">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No User to display</p>
+  {% endif %}
+{% endblock %}
+{% block javascripts %}
+ <script>
+ const user = document.getElementById('user');
+ if(user)
+ {
+   user.addEventListener('click', e => {
+     if(e.target.className ==="btn btn-danger delete-user" )
+     {
+       if (confirm('Are you sure?')) {
+          const id = e.target.getAttribute('data-id');
+       fetch(`/E-MailSender/public/user/delete/${id}`, {
+          method: 'DELETE'
+        }).then(res => window.location.reload());
+        }
+     }
+   })
+ }
+ </script>
+{% endblock %}

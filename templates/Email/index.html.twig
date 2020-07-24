@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+{% block title %}E-Mail Sender {% endblock%}
+{% block body %}
+<div class="container"><h1>E-Mail</h1></div>
+{% if mail %}
+    <table id="mails" class="table table-striped">
+      <thead>
+      <tr><th><a href="/E-MailSender/public/Email/new" class="nav-link">Send Mail</a></th></tr>
+        <tr>
+          <th>E-mail Subjrct </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for emails in mail %}
+          <tr>
+            <td>{{ emails.subject }}</td>
+            <td>
+              <a href="/E-MailSender/public/Email/{{ emails.id }}" class="btn btn-dark">Show</a>
+              <a href="/E-MailSender/public/Email/edit/{{ emails.id }}" class="btn btn-light">Edit</a>
+              <a href="#" class="btn btn-danger delete-mail" data-id="{{ emails.id }}">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No Mails to display</p>
+  {% endif %}
+{% endblock %}
+{% block javascripts %}
+ <script>
+ const mails = document.getElementById('mails');
+ if(mails)
+ {
+   mails.addEventListener('click', e => {
+     if(e.target.className ==="btn btn-danger delete-mail" )
+     {
+       if (confirm('Are you sure?')) {
+          const id = e.target.getAttribute('data-id');
+       fetch(`/E-MailSender/public/Email/delete/${id}`, {
+          method: 'DELETE'
+        }).then(res => window.location.reload());
+        }
+     }
+   })
+ }
+ </script>
+{% endblock %}

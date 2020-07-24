@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+{% block title %}E-Mail Sender Mails {% endblock%}
+{% block body %}
+<h1>{{ email.subject }} </h1>
+<p> {{ email.too }}</p>
+<p> {{ email.body }} </p>
+<a href="/E-MailSender/public/">Go Back </a>
+{% endblock %}
