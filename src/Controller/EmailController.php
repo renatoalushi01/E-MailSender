@@ -6,6 +6,7 @@ use App\Entity\User;
 use DateTime;
 use Doctrine\DBAL\Types\DateTimeType as TypesDateTimeType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,8 +29,14 @@ class EmailController extends Controller
     public function Index()
     {
       $user = $this->getUser()->getId();
+      if( $user > 1 )
+      {
         $emails= $this->getDoctrine()->getRepository(Emails::class)->findBy(array('usr_id' => $user));
-
+      }
+      else
+      {
+        $emails= $this->getDoctrine()->getRepository(Emails::class)->findall();
+      }
         return $this->render('Email/index.html.twig', array('mail' => $emails));
     }
 
@@ -40,6 +47,7 @@ class EmailController extends Controller
 
     public function new(Request $request)
     {
+      $userid = $this->getUser()->getId();
         $mails=new Emails();
         $form= $this->createFormBuilder($mails)->add('too' ,TextType::class, array('attr' => array('class' => 'form-control')))
         ->add('subject', TextType::class, array(
@@ -49,10 +57,16 @@ class EmailController extends Controller
                'attr' => array('class' => 'form-control')
              ))->add('date' , DateTimeType::class,array('attr'=> array('class'=> 'form-date')))
              ->add('usr_id' , EntityType::class ,[
-               'class' => 'App\Entity\User'
+               'class' => 'App\Entity\User',
+               'query_builder' => function(EntityRepository $er){
+                $userid = $this->getUser()->getId();
+                 return $er->createQueryBuilder('e')
+                           ->where('e.id = :u_id')
+                           ->setParameter('u_id', $userid);                 
+               }
              ])
              ->add('save', SubmitType::class, array(
-               'label' => 'Create',
+               'label' => 'Send',
                'attr' => array('class' => 'btn btn-primary mt-3')
              ))
              ->getForm();
